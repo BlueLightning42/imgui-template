@@ -2,6 +2,10 @@
 
 #include "graphics.h"
 
+// could make these nice and templated for now leaving them as overloaded functions...also helps with it not being in a header file
+// basically a use for vulkan objects in both c and c++ bindings along with a general bool type.
+// version that just displays text and a version that lets you format a parameter.
+
 // Custom Assert + text if assert fails
 void check_result(const vk::Result result, const char* description) noexcept {
 	if (result != vk::Result::eSuccess) {
