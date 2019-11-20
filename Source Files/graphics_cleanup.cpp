@@ -29,3 +29,15 @@ void Gui::cleanup_sdl() {
 	SDL_DestroyWindow(v->_window);
 	SDL_Quit();
 }
+
+GraphicContext::~GraphicContext() {
+	// Cleanup
+	SDL_GetWindowSize(gui.sdl_window, (int*)&settings.win_width, (int*)&settings.win_height);
+
+	gui.cleanup_imgui();
+
+	v.cleanup_vulkan();
+	gui.cleanup_sdl();
+
+	store_user_info();
+}
