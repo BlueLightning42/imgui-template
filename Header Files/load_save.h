@@ -2,14 +2,11 @@
 
 #include "pch.h"
 
-// This whole file is basically one big old TODO
 
-struct user_info {
-	bool fullscreen;
-	int win_height;
-	int win_width;
+struct UserInfo {
+	u8 fullscreen;
+	u32 win_height;
+	u32 win_width;
+
+	static const int size = 9; // u8+u32+u32 /8
 };
-
-user_info load_user_info();
-
-void store_user_info(const user_info&);

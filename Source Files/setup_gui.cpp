@@ -3,14 +3,14 @@
 #include "graphics.h"
 #include "load_save.h"
 
-Gui::Gui(user_info settings) {
+Gui::Gui(UserInfo _settings): settings(&_settings){
 
 	check_result(!SDL_Init(SDL_INIT_VIDEO),
 		"Could not initialize SDL. ERR: {}", fmt::make_format_args(SDL_GetError()));
 
 	SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
-	sdl_window = SDL_CreateWindow("Temp Name", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, settings.win_width, settings.win_height, window_flags);
+	sdl_window = SDL_CreateWindow("prison", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, settings->win_width, settings->win_height, window_flags);
 
 	check_result((sdl_window != NULL), "Could not create SDL window.");
 
@@ -45,8 +45,8 @@ void Gui::setup_vulkan_window() {
 		&wd,
 		v->_QueueFamilyIndex,
 		allocator,
-		v->width,
-		v->height,
+		settings->win_width,
+		settings->win_height,
 		v->_MinImageCount);
 }
 
