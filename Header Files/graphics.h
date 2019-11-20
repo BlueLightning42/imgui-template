@@ -58,8 +58,6 @@ public:
 	VkSurfaceKHR* c_ptr_SurfaceKHR()          { return reinterpret_cast<VkSurfaceKHR*>(&_surface); } 
 	VkAllocationCallbacks* c_ptr_Allocator() { return reinterpret_cast<VkAllocationCallbacks*>(_Allocator); }
 
-	int width = 100, height = 100;
-
 	// TODO make other constructors for different window types than SDL.
 	// basically low priority todo decouple from sdl
 	Vulkan(SDL_Window *window):
@@ -67,6 +65,7 @@ public:
 		this->setup_vulkan();
 		this->create_surface();
 	}
+	Vulkan() = default;
 
 
 	void cleanup_vulkan();
@@ -93,11 +92,13 @@ class Gui {
 
 	ImGui_ImplVulkanH_Window wd;
 	Vulkan* v;
-
+	UserInfo* settings;
 	bool show_demo_window;
 	bool show_another_window;
 	ImVec4 clear_color;
-	Gui(user_info);
+	Gui(UserInfo);
+	
+	Gui() = default;
 
 	void bind_vulkan(Vulkan* _v) { this->v = _v; }
 
@@ -110,7 +111,6 @@ class Gui {
 	void FrameRender();
 	void FramePresent();
 
-	void cleanup_vulkan_window();
 	void cleanup_imgui();
 	void cleanup_sdl();
  private:
@@ -119,3 +119,39 @@ class Gui {
 };
 
 
+class GraphicContext {
+public:
+	Vulkan v;
+	Gui gui;
+	UserInfo settings;
+
+	GraphicContext() {
+		//load saved user settings
+		load_user_info();
+		//setup SDL window
+		gui = Gui(settings);
+		//setup vulkan bare bones. Instance/Device/Surface.
+		v = Vulkan(gui.sdl_window);
+		//setup imgui
+		gui.bind_vulkan(&v);
+
+		gui.initialize();
+	}
+	~GraphicContext() {
+		// Cleanup
+		SDL_GetWindowSize(gui.sdl_window, (int*)&settings.win_width, (int*)&settings.win_height);
+
+		gui.cleanup_imgui();
+
+		v.cleanup_vulkan();
+		gui.cleanup_sdl();
+
+		store_user_info();
+	}
+	void process_event(SDL_Event);
+	void main_loop();
+private:
+
+	void load_user_info();
+	void store_user_info();
+};
